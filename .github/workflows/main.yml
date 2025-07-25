@@ -20,7 +20,6 @@ jobs:
         run: python crawler.py
       - name: Commit updates
         run: |
-          git config --global user.email "aloysiusfaustin@gmail.com"
           git config --global user.name "GitHub Action"
           git add data/cs2/updates_raw.json
           git diff --cached --quiet || git commit -m "Update CS2 data [bot]"
