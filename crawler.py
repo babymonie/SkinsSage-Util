@@ -47,14 +47,18 @@ def fetch_updates():
     options.add_argument("--disable-dev-shm-usage")
 
     # 1) Scrape list pages for link + image_url
-    driver_list = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+    # Create a Service object with the driver path
+    service = Service(ChromeDriverManager().install())
+
+    # Pass it into the Chrome WebDriver
+    driver = webdriver.Chrome(service=service, options=options)
     entries_info = []
     try:
-        driver_list.get(URL)
-        WebDriverWait(driver_list, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
+        driver.get(URL)
+        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
 
         while True:
-            caps = driver_list.find_elements(By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")
+            caps = driver.find_elements(By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")
             for cap in caps:
                 href = cap.get_attribute("href")
                 if not href or not href.startswith("https://www.counter-strike.net"):
@@ -68,16 +72,17 @@ def fetch_updates():
                 entries_info.append({"link": href, "image_url": img})
 
             # next page?
-            nav = driver_list.find_elements(By.CSS_SELECTOR, ".blogoverviewpage_PageNumber_FafYQ")
+            nav = driver.find_elements(By.CSS_SELECTOR, ".blogoverviewpage_PageNumber_FafYQ")
             if not nav or "Hidden" in nav[-1].get_attribute("class"):
                 break
             nav[-1].click()
-            WebDriverWait(driver_list, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
+            WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
     finally:
-        driver_list.quit()
+        driver.quit()
 
     # 2) Fetch details for each entry with a second driver
-    driver_detail = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=options)
+    service_detail = Service(ChromeDriverManager().install())
+    driver_detail = webdriver.Chrome(service=service_detail, options=options)
     updates = []
     try:
         for info in entries_info:
