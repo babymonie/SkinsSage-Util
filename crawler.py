@@ -1,33 +1,36 @@
-import requests
-from bs4 import BeautifulSoup
-import hashlib
-import json
 import os
+import json
+import hashlib
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from concurrent.futures import ThreadPoolExecutor
-
-
-import time
+from webdriver_manager.chrome import ChromeDriverManager
 
 URL = "https://www.counter-strike.net/news"
 DATA_FILE = "data/cs2/updates_raw.json"
 
-def fetch_blog_details_with_selenium(driver, link):
-    """Fetch blog details using Selenium."""
+def fetch_blog_details_with_selenium(link):
+    """Fetch blog post title, date, and body from detail page."""
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get(link)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".blogentrypage_Title_2HW6u")))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "._2HW6u-IlsL50KUqJyif8Ls"))
+        )
 
-        title = driver.find_element(By.CSS_SELECTOR, ".blogentrypage_Title_2HW6u").text.strip()
-        date = driver.find_element(By.CSS_SELECTOR, ".blogentrypage_Date_2JNhX").text.strip()
-        body = driver.find_element(By.CSS_SELECTOR, ".blogentrypage_Body_30GVv").text.strip()
+        title = driver.find_element(By.CSS_SELECTOR, "._2HW6u-IlsL50KUqJyif8Ls").text.strip()
+        date = driver.find_element(By.CSS_SELECTOR, "._2JNhX05chbmg2pDcad3NuT").text.strip()
+        body = driver.find_element(By.CSS_SELECTOR, "._30GVvAUcc-I1luXxmzjBYK").text.strip()
 
         uid = hashlib.md5((date + title).encode("utf-8")).hexdigest()
         return {
@@ -37,61 +40,53 @@ def fetch_blog_details_with_selenium(driver, link):
             "entry": f"{title}\n\n{body}"
         }
     except Exception as e:
-        print(f"Failed to fetch details for {link}: {e}")
+        print(f"[!] Failed: {link} | {e}")
         return None
+    finally:
+        driver.quit()
 
 def fetch_updates():
+    """Scrape all article links + preview images from CS2 news."""
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-
-    # 1) Scrape list pages for link + image_url
-    # Create a Service object with the driver path
     service = Service(ChromeDriverManager().install())
-
-    # Pass it into the Chrome WebDriver
     driver = webdriver.Chrome(service=service, options=options)
-    entries_info = []
+    updates = []
+
     try:
         driver.get(URL)
-        WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a._3OBoG7TZb8gxM8NbILzAan"))
+        )
 
-        while True:
-            caps = driver.find_elements(By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")
-            for cap in caps:
-                href = cap.get_attribute("href")
-                if not href or not href.startswith("https://www.counter-strike.net"):
-                    continue
-                # extract image URL
-                try:
-                    style = cap.find_element(By.CSS_SELECTOR, ".blogcapsule_Image_Nh_xZ").get_attribute("style")
-                    img = style.split('url("')[1].split('")')[0]
-                except:
-                    img = None
-                entries_info.append({"link": href, "image_url": img})
+        articles = driver.find_elements(By.CSS_SELECTOR, "a._3OBoG7TZb8gxM8NbILzAan")
+        entries_info = []
 
-            # next page?
-            nav = driver.find_elements(By.CSS_SELECTOR, ".blogoverviewpage_PageNumber_FafYQ")
-            if not nav or "Hidden" in nav[-1].get_attribute("class"):
-                break
-            nav[-1].click()
-            WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.blogcapsule_BlogCapsule_3OBoG")))
+        for art in articles:
+            href = art.get_attribute("href")
+            if not href.startswith("https://www.counter-strike.net"):
+                href = "https://www.counter-strike.net" + href
+
+            try:
+                style = art.find_element(By.CSS_SELECTOR, ".Nh_xZMN_Sujrqhv-aCKHt").get_attribute("style")
+                img = style.split('url("')[1].split('")')[0]
+            except:
+                img = None
+
+            entries_info.append({"link": href, "image_url": img})
+
+        # Fetch each article content concurrently
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            for result in ex.map(lambda x: fetch_blog_details_with_selenium(x["link"]), entries_info):
+                if result:
+                    match = next((e for e in entries_info if e["link"] == result["link"]), None)
+                    if match:
+                        result["image_url"] = match["image_url"]
+                    updates.append(result)
     finally:
         driver.quit()
-
-    # 2) Fetch details for each entry with a second driver
-    service_detail = Service(ChromeDriverManager().install())
-    driver_detail = webdriver.Chrome(service=service_detail, options=options)
-    updates = []
-    try:
-        for info in entries_info:
-            details = fetch_blog_details_with_selenium(driver_detail, info["link"])
-            if details:
-                details["image_url"] = info["image_url"]
-                updates.append(details)
-    finally:
-        driver_detail.quit()
 
     return updates
 
@@ -107,20 +102,20 @@ def save_updates(updates):
         json.dump(updates, f, indent=2, ensure_ascii=False)
 
 def main():
+    print("[*] Fetching new updates...")
     new_updates = fetch_updates()
     existing_updates = load_existing_updates()
 
+    existing_ids = {e["id"] for e in existing_updates}
+    fresh = [u for u in new_updates if u["id"] not in existing_ids]
 
-    existing_ids = {entry["id"] for entry in existing_updates}
-    fresh_updates = [entry for entry in new_updates if entry["id"] not in existing_ids]
-
-    if fresh_updates:
-
-        all_updates = fresh_updates + existing_updates
+    if fresh:
+        print(f"[+] {len(fresh)} new updates found.")
+        all_updates = fresh + existing_updates
         save_updates(all_updates)
     else:
-        print("No new updates found.")
+        print("[-] No new updates found.")
 
 if __name__ == "__main__":
     main()
-    print("Update check completed.")
+    print("✅ Update check completed.")
