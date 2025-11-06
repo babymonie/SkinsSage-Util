@@ -1,5 +1,33 @@
 [
   {
+    "id": "d51cdd53b1c02a8b327233955bad4a76",
+    "timestamp": "NOVEMBER 5, 2025",
+    "link": "https://www.counter-strike.net/newsentry/578276333072678918",
+    "entry": "Introducing TrueView\n\nToday we're adding a new feature to demo playback called TrueView.  With TrueView, demo playback will match the player's original experience much more closely.\nPreviously, demo playback showed the server's view of the world, without accounting for network latency. This could be confusing because shots would hit that didn't look like they should have, and vice versa. \nTrueView provides a more accurate representation of the observed player's experience by re-running their client-side prediction.\nThe video below shows the difference between the old demo playback and the same playback with TrueView.\nA few caveats:\nBy default, TrueView is deactivated when the version of the game you are using to view the demo does not match the version of the game used to record the demo.\nEven with TrueView active, there may still be some differences between what you see in the demo and what the player originally saw (especially with slow-motion playback). For example, damage effects will have different timing during demo playback due to the way CPU and GPU work are pipelined.\nIn addition to performing clientside prediction of the observed player, TrueView will also perform Damage Prediction on enemies, if Damage Prediction was used by the observed player at the time. \nAdditionally, we're shipping movement changes that we made available last week in a beta branch. All that and more and today's update!",
+    "image_url": "https://clan.akamai.steamstatic.com/images/3381077/8d881c9e69922ab988c6304052979d16bc920346.png"
+  },
+  {
+    "id": "684b73af46ef23252384dbdb511fe8d5",
+    "timestamp": "OCTOBER 22, 2025",
+    "link": "https://www.counter-strike.net/newsentry/516350567072661952",
+    "entry": "Re-Retakes\n\nThe bomb has been planted and you're running out of time. It's the return of retakes! \nIn this classic game mode, each round drops you in to a fast-paced 4v3 after-plant scenario. Select your loadout card each round, check the map to coordinate with your teammates, and use your resources wisely to defuse (or defend) the planted bomb.\nThe clock is ticking, what are you waiting for? Jump into a retakes server now!",
+    "image_url": "https://clan.akamai.steamstatic.com/images/3381077/e2a19537713ac31219ddd6f42730425b9fc98df4.png"
+  },
+  {
+    "id": "bdbd6b4ed9c8e9f48f871a9faa64052d",
+    "timestamp": "OCTOBER 1, 2025",
+    "link": "https://www.counter-strike.net/newsentry/498333631688738072",
+    "entry": "Community Maps, Charms, and More\n\nLet's get right into it. Today's update features new Wingman and Competitive community maps, along with brand new charms (including community designs), stickers, and more.\nCommunity Maps\nFrom the mines of Golden to the moving train in Transit, we've got four new Community maps for you to check out. Golden and Palacio have been added to Competitive, Casual, and Deathmatch modes, and Rooftop and Transit have been added to Wingman.\nNew Armory Content\nIt's a lil' HE grenade... for your gun. It doesn't explode, but it sure is charming. Introducing the all new Dr. Boom Charms, now available in the Armory.\nA few months ago we added charms to the workshop, and you responded. For some insight into the creative and occasionally twisted minds of the CS2 community, check out the Missing Link Community Charms in the Armory.\nSpeaking of community designs, the Armory now features two brand new sticker collections, including the return of Sugarface!",
+    "image_url": "https://clan.akamai.steamstatic.com/images/3381077/e3dd09af221d416e9535fbd2a1c3ac0c74dfd071.png"
+  },
+  {
+    "id": "84be9c7a88f48db3d2fa34abdc6930ec",
+    "timestamp": "SEPTEMBER 16, 2025",
+    "link": "https://www.counter-strike.net/newsentry/514095143786120351",
+    "entry": "Show Off\n\nHear that? It's the sound of a new update in CS2... and your grenades, which now have unique higher-fidelity sounds for draw, inspect, pin-pull, and throw. For community map makers, there's a new scripting system available along with some examples for you to check out. All that and more in today's update!\n\nSpectator Loadout\n\nFinally, a reason to be happy your teammates are dead. While you're busy clutching, your teammates can peek at your full loadout, inspect your weapons, and possibly offer you unsolicited fashion advice. Stay alive, and show off the best of your collection!\n\nGenesis Collection\n\nIntroducing the Genesis Collection, featuring 17 finishes from community contributors. Genesis Collection items can be accessed via Genesis Uplink Terminals, which are available as a weekly drop.",
+    "image_url": "https://clan.akamai.steamstatic.com/images/3381077/69e1b3916a6ecefa7be2fe7262ca2a49eb54b992.png"
+  },
+  {
     "id": "3872c78d08776b0bd07a32aa6f54a9b2",
     "timestamp": "AUGUST 14, 2025",
     "link": "https://www.counter-strike.net/newsentry/657081807721726187",
