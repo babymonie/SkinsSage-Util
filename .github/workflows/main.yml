@@ -21,6 +21,7 @@ jobs:
       - name: Commit updates
         run: |
           git config --global user.name "GitHub Action"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/cs2/updates_raw.json
           git diff --cached --quiet || git commit -m "Update CS2 data [bot]"
           git push
