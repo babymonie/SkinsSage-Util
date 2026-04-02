@@ -1,5 +1,12 @@
 [
   {
+    "id": "6d612a30719c94cba2d0587d57c9036b",
+    "timestamp": "APRIL 1, 2026",
+    "link": "https://www.counter-strike.net/newsentry/528750051218948816",
+    "entry": "Animgraph 2 Beta\n\nToday we're shipping a beta build that updates CS2's animation system to Animgraph 2, which reduces the CPU and networking costs associated with animation. Along with the technical work involved in switching to the new system, all third person animations have been re-authored and, in many cases, adjusted in response to player feedback.\n\nIt's time for you to take a look, poke around for bugs, and tell us what you think. To opt into the beta build, follow the instructions here and choose the 'animgraph_2_beta' build. Note that you will not be able to connect to Valve servers while you are using the beta build. To report bugs or provide feedback about Animgraph 2, please email csgoteamfeedback@valvesoftware.com with the subject \"AG2 Beta\".",
+    "image_url": "https://clan.fastly.steamstatic.com/images/3381077/90e2a7b72ccc626e600b9ce52a418c523685f1c9.png"
+  },
+  {
     "id": "fea887d83a7d90a462a5ad3f9def15f1",
     "timestamp": "MARCH 18, 2026",
     "link": "https://www.counter-strike.net/newsentry/532126482488623353",
